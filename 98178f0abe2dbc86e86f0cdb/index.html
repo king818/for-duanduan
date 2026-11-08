@@ -378,18 +378,49 @@
     }
     if (active !== lastActive) {
       lines.forEach(function(el){ el.classList.toggle('now', el === active); });
-      if (active) {
-        var r = active.getBoundingClientRect();
-        if (r.top > window.innerHeight * 0.72 || r.bottom < window.innerHeight * 0.18) {
-          active.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }
+      if (active) { followLine(active); }
       lastActive = active;
     }
     if (!audio.paused && !audio.ended) { rafId = requestAnimationFrame(syncStep); }
   }
   function startSync(){ if (rafId === null) { rafId = requestAnimationFrame(syncStep); } }
   function stopSync(){ if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
+
+  /* ---- 跟随导演：自动滑动的唯一机制 ----
+     每一段文字都必须在自动流程中至少有一次「完整停留在可见区内」。
+     做法：定点停靠（把目标锚到视口固定比例处）＋ 落定复查（平滑滑动结束后
+     再量一次位置，出界就纠正）＋ 段落停靠（献词借引子停靠；曲终依次停靠
+     画面、祝福、收束，再进终幕）。观众一旦手动滑动，跟随立即让位。 */
+  var followSuspended = false;   /* 观众手动滑动后置真，重新播放时清除 */
+  var settleTimer = null;
+  var leadTimer = null;
+  function scrollToEl(el, ratio){
+    if (!el) { return; }
+    var r = el.getBoundingClientRect();
+    var y = window.scrollY + r.top + (r.height / 2) - window.innerHeight * ratio;
+    var maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo({ top: Math.min(Math.max(0, y), maxY), behavior: 'smooth' });
+  }
+  function followLine(line){
+    if (followSuspended) { return; }
+    scrollToEl(line, 0.45);
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(function(){
+      if (followSuspended || !lastActive) { return; }
+      var r = lastActive.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.10 || r.bottom > window.innerHeight * 0.90) {
+        scrollToEl(lastActive, 0.45);
+      }
+    }, 850);
+  }
+  window.addEventListener('wheel', suspendFollow, { passive: true });
+  window.addEventListener('touchmove', suspendFollow, { passive: true });
+  function suspendFollow(){
+    followSuspended = true;
+    clearTimeout(settleTimer);
+    clearTimeout(leadTimer);
+    if (walkRunning) { cancelWalkToFinale(); }
+  }
 
   var playHint = document.getElementById('playHint');
   var hintShown = false, awaitingPlay = false, hintTimer = null;
@@ -420,6 +451,16 @@
     word.textContent = '暂停';
     btn.setAttribute('aria-label', '暂停');
     if (mtv && !mtv.paused) { mtv.pause(); }
+    followSuspended = false;
+    clearTimeout(leadTimer);
+    if (audio.currentTime < 12) {
+      /* 引子约 14 秒：先停靠献词段，让献词与引言完整停留，再由第一句歌词接棒 */
+      leadTimer = setTimeout(function(){
+        if (!followSuspended && !audio.paused && audio.currentTime < 13.5) {
+          scrollToEl(document.getElementById('dedication'), 0.42);
+        }
+      }, 1200);
+    }
     startSync();
   });
   audio.addEventListener('pause', function(){
@@ -497,13 +538,54 @@
     stopSync();
     lines.forEach(function(p){ p.classList.remove('now'); });
     lastActive = null;
-    runFinale();
+    startPostSongWalk();
   });
   document.getElementById('replayBtn').addEventListener('click', function(){
     window.scrollTo({ top: 0, behavior: 'smooth' });
     audio.currentTime = 0;
     safePlay(audio);
   });
+
+  /* ---- 曲终停靠：画面 → 祝福 → 收束 → 终幕，每站停稳、停够，再走 ----
+     画面站是正式一站：停留 9 秒等她点播；她一旦播放，流程就地暂停，
+     绝不在播放中把她拖走；看完（或暂停稍久）才继续下一站。 */
+  var walkRunning = false, walkIdx = -1, walkTimer = null, walkHeld = false;
+  var walkSteps = [
+    { el: function(){ return document.getElementById('mtv-sec'); }, ratio: 0.30, dwell: 9000 },
+    { el: function(){ return document.getElementById('blessing-sec'); }, ratio: 0.38, dwell: 4600 },
+    { el: function(){ return document.querySelector('#close-sec .her-line'); }, ratio: 0.45, dwell: 4600 }
+  ];
+  function walkAdvance(){
+    walkTimer = null;
+    if (!walkRunning || followSuspended) { return; }
+    walkIdx++;
+    if (walkIdx >= walkSteps.length) { walkRunning = false; runFinale(); return; }
+    var step = walkSteps[walkIdx];
+    scrollToEl(step.el(), step.ratio);
+    walkTimer = setTimeout(walkAdvance, step.dwell);
+  }
+  function startPostSongWalk(){
+    if (followSuspended) { runFinale(); return; }
+    walkRunning = true; walkIdx = -1; walkHeld = false;
+    clearTimeout(walkTimer);
+    walkAdvance();
+  }
+  function cancelWalkToFinale(){
+    clearTimeout(walkTimer); walkTimer = null;
+    walkRunning = false; walkHeld = false;
+    finishFinale();
+  }
+  if (mtv) {
+    mtv.addEventListener('play', function(){
+      if (walkRunning && walkIdx === 0) { clearTimeout(walkTimer); walkTimer = null; walkHeld = true; }
+    });
+    mtv.addEventListener('ended', function(){
+      if (walkHeld) { walkHeld = false; walkTimer = setTimeout(walkAdvance, 3000); }
+    });
+    mtv.addEventListener('pause', function(){
+      if (walkHeld && !mtv.ended) { walkHeld = false; walkTimer = setTimeout(walkAdvance, 8000); }
+    });
+  }
 
   /* ---- 段落入场 ---- */
   var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function(es){
