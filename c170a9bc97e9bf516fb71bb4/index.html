@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="《愿你心里有光》">
+<title>《愿你心里有光》</title>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  @font-face{
+    font-family:"HanSerifSub";
+    src:url("fonts/serif-sub.woff2") format("woff2");
+    font-weight:400; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:"HanSerifSub";
+    src:url("fonts/serif-sub-bold.woff2") format("woff2");
+    font-weight:700; font-style:normal; font-display:swap;
+  }
+  :root{
+    color-scheme: light only;
+    --bg:#FAF6F0; --ink:#22303C; --soft:#5D6B76; --faint:#87919A;
+    --gold:#C9A227; --gold-deep:#9A7A3F; --hair:#E3DACA;
+  }
+  @media (prefers-color-scheme: dark){
+    body{ background:#FAF6F0 !important; color:#22303C !important; }
+    .finale{ background:#FAF6F0 !important; }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html, body{overscroll-behavior:none}
+  body{
+    margin:0; color:var(--ink); background:var(--bg);
+    font-family:"HanSerifSub","Songti SC","STSong","Noto Serif SC","Noto Serif CJK SC","Source Han Serif SC",serif;
+    font-size:17.5px; line-height:1.9; letter-spacing:.02em;
+    -webkit-font-smoothing:antialiased;
+    opacity:0; animation:pagein 1.4s ease .4s forwards;
+  }
+  @keyframes pagein{to{opacity:1}}
+  /* living dawn sky behind the first screen — pure CSS, no assets */
+  .sky{
+    position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.5;
+    background:linear-gradient(180deg,
+      #DCE7EC 0%, #E9E4D2 30%, #F6ECD7 46%,
+      #F3E3C2 54%, #EFD9B4 58%,
+      #C7D3D2 58.2%, #B9C8C6 72%, #A9BCBB 100%);
+    animation:dawn 26s ease-in-out infinite alternate;
+  }
+  .sky::before{
+    content:""; position:absolute; left:50%; top:58%; width:120px; height:120px;
+    transform:translate(-50%,-50%); border-radius:50%;
+    background:radial-gradient(circle, rgba(255,236,190,.95) 0, rgba(250,220,160,.55) 34%, rgba(250,220,160,0) 70%);
+    animation:sunwarm 26s ease-in-out infinite alternate;
+  }
+  .sky::after{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(120% 65% at 50% 58%, rgba(255,214,140,.28) 0, rgba(255,214,140,0) 62%);
+    animation:sunwarm 26s ease-in-out infinite alternate;
+  }
+  @keyframes dawn{from{filter:brightness(.965) saturate(.96)}to{filter:brightness(1.045) saturate(1.05)}}
+  @keyframes sunwarm{from{opacity:.55}to{opacity:1}}
+  body.playing .sky, body.playing .sky::before, body.playing .sky::after{animation-duration:11s}
+
+  main{
+    max-width:620px; margin:0 auto;
+    padding:calc(44px + env(safe-area-inset-top)) max(32px,8.5vw) calc(56px + env(safe-area-inset-bottom));
+  }
+
+  /* ---------- first screen ---------- */
+  .hero{
+    min-height:100vh; min-height:100svh; min-height:100dvh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; margin-top:calc(-44px - env(safe-area-inset-top));
+  }
+  h1{font-size:22px; line-height:1.4; font-weight:400; letter-spacing:.14em; text-indent:.14em; margin:0 0 16px;}
+  .hero-sub{font-size:13px; line-height:1.6; letter-spacing:.18em; text-indent:.18em; color:rgba(34,48,60,.55); margin:0 0 68px;}
+  .listen-btn{
+    display:flex; flex-direction:column; align-items:center; gap:18px;
+    background:none; border:none; cursor:pointer; padding:12px;
+    font-family:inherit; color:var(--ink); -webkit-tap-highlight-color:transparent;
+  }
+  .ring-wrap{position:relative; width:78px; height:78px; animation:sway 4s ease-in-out infinite;}
+  @keyframes sway{0%,100%{transform:scale(.98)}50%{transform:scale(1.02)}}
+  .ring-wrap::before{ /* breathing halo */
+    content:""; position:absolute; inset:-16px; border-radius:50%;
+    background:radial-gradient(circle, rgba(233,201,120,.5) 0, rgba(233,201,120,0) 68%);
+    animation:halo 4s ease-in-out infinite;
+  }
+  @keyframes halo{0%,100%{opacity:.25}50%{opacity:.5}}
+  .ring-wrap.buffering::before{animation-duration:1.3s}
+  .ring{
+    position:relative; width:78px; height:78px; border-radius:50%;
+    border:1px solid var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    transition:background .8s ease;
+  }
+  .ring .tri{
+    width:0; height:0; margin-left:4px;
+    border-left:15px solid var(--gold-deep);
+    border-top:9px solid transparent; border-bottom:9px solid transparent;
+  }
+  .ring .bars{display:none; align-items:flex-end; gap:3.5px; height:18px;}
+  .ring .bars i{width:3px; background:var(--gold-deep); border-radius:2px; animation:eq 1.1s ease-in-out infinite;}
+  .ring .bars i:nth-child(1){height:9px}
+  .ring .bars i:nth-child(2){height:16px; animation-delay:.18s}
+  .ring .bars i:nth-child(3){height:11px; animation-delay:.36s}
+  .ring .bars i:nth-child(4){height:15px; animation-delay:.54s}
+  @keyframes eq{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1)}}
+  .playing .ring{background:radial-gradient(circle,rgba(201,162,39,.16) 0,rgba(201,162,39,0) 70%)}
+  .playing .ring .tri{display:none}
+  .playing .ring .bars{display:flex}
+  .listen-word{font-size:15px; letter-spacing:.3em; text-indent:.3em; transition:opacity .6s ease;}
+  .playing .listen-word{opacity:.3}
+  .whisper{
+    margin:30px 0 0; font-size:11px; color:var(--faint); letter-spacing:.14em; text-indent:.14em;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .play-hint{
+    margin:14px 0 0; font-size:11px; color:var(--faint); letter-spacing:.1em; text-indent:.1em;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    opacity:0; transition:opacity .6s ease; pointer-events:none;
+  }
+  .play-hint.show{opacity:1}
+  .mini-toggle{
+    position:fixed; right:calc(14px + env(safe-area-inset-right)); bottom:calc(14px + env(safe-area-inset-bottom));
+    z-index:40; width:40px; height:40px; border:none; background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .8s ease;
+    font-family:var(--serif); font-size:13px; color:var(--gold-deep);
+  }
+  .mini-toggle.show{opacity:.3; pointer-events:auto}
+  .mini-toggle .mini-ring{
+    position:absolute; inset:6px; border:1px solid var(--gold); border-radius:50%;
+  }
+  .playing .mini-toggle .mini-ring{animation:breathe 4s ease-in-out infinite}
+
+  /* ---------- sections (one continuous scene, no chrome) ---------- */
+  section{padding:64px 0 0}
+  .reveal{opacity:1}
+  .js .reveal{opacity:0; transform:translateY(14px); transition:opacity 1.1s ease, transform 1.1s ease}
+  .js .reveal.in{opacity:1; transform:none}
+  h2{font-size:17px; font-weight:700; letter-spacing:.14em; margin:0 0 22px;}
+  .dedication{font-size:17.5px; margin:0 0 26px;}
+  .intro{font-size:16px; color:var(--soft); margin:0;}
+  .invite{color:var(--soft); font-size:15.5px; margin:0 0 18px;}
+  video{width:100%; display:block; background:#10161C; aspect-ratio:16/9; border:none;}
+  .frame{
+    aspect-ratio:16/9; display:flex; flex-direction:column; gap:14px;
+    align-items:center; justify-content:center; text-align:center;
+    background:linear-gradient(180deg,#F3E7CB 0,#EFE0BC 52%,#D8DFD6 52.2%,#C2CFC9 100%);
+  }
+  .frame .f-dot{
+    width:13px; height:13px; border-radius:50%; background:var(--gold);
+    box-shadow:0 0 34px 13px rgba(233,201,120,.55);
+    animation:halo 4s ease-in-out infinite;
+  }
+  .frame .f-word{color:#5C5142; font-size:16px; letter-spacing:.3em; text-indent:.3em;}
+  .frame .f-sub{color:#7A7263; font-size:13px; letter-spacing:.14em; text-indent:.14em;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;}
+
+  /* poem */
+  .lyrics{max-width:21em;}
+  .lyrics p{
+    margin:0 0 10px; font-size:17px; line-height:2.2; letter-spacing:.08em;
+    color:rgba(34,48,60,.32);
+    transition:color .6s cubic-bezier(.25,1,.5,1), text-shadow .6s cubic-bezier(.25,1,.5,1);
+  }
+  .lyrics p.sung{color:rgba(34,48,60,.5)}
+  .lyrics p.now{color:var(--ink); text-shadow:0 0 16px rgba(201,162,39,.22)}
+  .lyrics .stanza{margin-bottom:32px}
+  .lyrics .stanza-name{
+    color:var(--gold-deep); font-size:13px; letter-spacing:.22em; margin-bottom:12px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .blessing{font-size:17px; margin:0}
+  .her-line{
+    text-align:center; font-size:19px; line-height:1.8; letter-spacing:.28em; text-indent:.28em;
+    color:var(--ink); margin:20px 0 0; font-weight:400;
+  }
+
+  /* ---------- finale: night sea that dawns ---------- */
+  .finale{
+    position:relative; margin-top:84px;
+    min-height:100vh; min-height:100svh; min-height:100dvh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; overflow:hidden;
+    padding:calc(44px + env(safe-area-inset-top)) max(32px,8.5vw) calc(56px + env(safe-area-inset-bottom));
+    background:var(--bg);
+  }
+  .fin-night{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(120% 60% at 50% 100%, rgba(201,162,39,.25) 0, rgba(201,162,39,0) 60%),
+      #22303C;
+    opacity:1; transition:opacity 2s cubic-bezier(.22,1,.36,1);
+  }
+  .finale.dawned .fin-night{opacity:0}
+  .fin-inner{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; max-width:620px;}
+  .fin-line{
+    width:3px; height:3px; border-radius:50%; background:var(--gold); margin-bottom:58px;
+    animation:anchor 3s ease-in-out infinite;
+    transition:width 1.2s ease-out, height 1.2s ease-out, border-radius 1.2s ease-out;
+  }
+  @keyframes anchor{0%,100%{opacity:.25}50%{opacity:.6}}
+  .fin-line.grow{width:48px; height:1px; border-radius:0; opacity:.7; animation:none}
+  .fin-her{
+    font-size:19px; line-height:1.8; font-weight:400; letter-spacing:.28em; text-indent:.28em;
+    color:var(--ink); margin:0; min-height:1.8em;
+  }
+  .fin-her .ch{
+    opacity:0; filter:blur(5px); transform:translateY(3px); display:inline-block;
+    transition:opacity .9s cubic-bezier(.16,1,.3,1), filter .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+  }
+  .fin-her .ch.on{opacity:1; filter:blur(0); transform:none}
+  .fin-cy{
+    margin:70px 0 0; font-size:10.5px; letter-spacing:.15em; text-indent:.15em;
+    color:rgba(201,162,39,.32); opacity:0;
+    transition:opacity 1.8s ease;
+  }
+  .fin-cy.float{opacity:1}
+  .fin-replay{
+    margin-top:64px; background:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:14px; color:var(--faint); letter-spacing:.2em; text-indent:.2em; padding:10px;
+  }
+  .footnote{
+    margin-top:56px; padding-top:20px; border-top:1px solid var(--hair);
+    font-size:12.5px; line-height:1.85; color:#6E6250; text-align:center;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .made-date{
+    margin:30px 0 0; font-size:11.5px; color:var(--faint);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .save{
+    display:block; margin-top:26px; font-size:12.5px; color:var(--faint); text-decoration:none;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    body{animation:none; opacity:1}
+    .sky,.sky::before,.sky::after,.ring-wrap,.ring-wrap::before,.frame .f-dot,.ring .bars i{animation:none}
+    .js .reveal{opacity:1; transform:none; transition:none}
+    .fin-night,.fin-line,.fin-her .ch,.fin-cy{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"></div>
+<main>
+  <!-- 第一屏：歌名、一句小字、一个聆听入口 -->
+  <div class="hero">
+    <h1>《愿你心里有光》</h1>
+    <p class="hero-sub">给端端的一首歌</p>
+    <button class="listen-btn" id="listenBtn" type="button" aria-label="听一听">
+      <span class="ring-wrap" id="ringWrap"><span class="ring"><span class="tri"></span><span class="bars"><i></i><i></i><i></i><i></i></span></span></span>
+      <span class="listen-word" id="listenWord">听一听</span>
+    </button>
+    <p class="whisper">戴上耳机，效果更佳</p>
+    <p class="play-hint" id="playHint">若未出声，请再点一次</p>
+  </div>
+
+  <audio id="song" controls preload="metadata" src="song.mp3"></audio>
+
+  <!-- 献词 -->
+  <section class="reveal" id="dedication">
+    <p class="dedication">端端，这首歌是C.Y.和团队特意为你的30岁生日做的。没有太多排场，只想把一份安静、认真、属于你的祝福送给你。</p>
+    <p class="intro">这首歌里，放进了我们最想送给你的几件事：愿你有光，也有安宁；有健康，也有自在；不必追着谁的步调，只按自己的节奏，把想做的事一点一点做成。得失来去，都不必惊扰内心。愿你一路走自己真正想走的路。</p>
+  </section>
+
+  <!-- 歌词 -->
+  <section class="reveal" id="lyrics-sec">
+    <h2>歌词</h2>
+    <div class="lyrics" id="lyrics">
+      <div class="stanza">
+        <p class="stanza-name">主歌一</p>
+        <p data-t="13.9">海风轻轻吹过窗台，</p>
+        <p data-t="20.7">晨光落在你肩上。</p>
+        <p data-t="27.8">这一路走了很远，</p>
+        <p data-t="34.2">心里还装着微光。</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">副歌</p>
+        <p data-t="39.3">愿你心里有光，脚下有路，</p>
+        <p data-t="46.6">平安健康，日子不慌不忙。</p>
+        <p data-t="53.4">想做的事，一点点做成，</p>
+        <p data-t="60.4">得失从缘，心无增减，自在生长。</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">主歌二</p>
+        <p data-t="81.6">有人说世界很大，</p>
+        <p data-t="88.2">有人说时间很忙。</p>
+        <p data-t="95.2">你只管走自己的路，</p>
+        <p data-t="102.6">把喜欢活成日常。</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">副歌（重复）</p>
+        <p data-t="107.2">愿你心里有光，脚下有路，</p>
+        <p data-t="114.5">平安健康，日子不慌不忙。</p>
+        <p data-t="121.3">想做的事，一点点做成，</p>
+        <p data-t="128.2">得失从缘，心无增减，自在生长。</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">结尾</p>
+        <p data-t="137.5">愿你心里有光，</p>
+        <p data-t="144.5">一直亮着，不慌不忙。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 画面（MTV）：影像版随后就位，先以晨光画框相候 -->
+  <section class="reveal" id="mtv-sec">
+    <p class="invite">也可以看看这首歌的画面</p>
+    <div class="frame" id="mtvFrame">
+      <span class="f-dot"></span>
+      <span class="f-word">画面正在路上</span>
+      <span class="f-sub">这首歌的影像，很快就来</span>
+    </div>
+    <video id="mtv" controls preload="none" playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5-page" src="mtv.mp4" hidden>
+      您的浏览器不支持视频播放。
+    </video>
+  </section>
+
+  <!-- 祝福 -->
+  <section class="reveal" id="blessing-sec">
+    <h2>祝福</h2>
+    <p class="blessing">端端，30岁生日快乐。❤️ 愿你新的一岁平安、健康，心里越来越自在，想做的事情一点一点做成。你写过“得失从缘，心无增减”，我一直很喜欢这句话。愿往后的日子，无论顺境逆境，你都能保有自己的光、自己的底气，也有很多真正让你开心的人和事。愿上帝看顾你。生日快乐，老猪。🎂</p>
+  </section>
+
+  <!-- 她自己的话（静态收束） -->
+  <section class="reveal" id="close-sec">
+    <p class="her-line">得失从缘，心无增减</p>
+  </section>
+<button class="mini-toggle" id="miniToggle" type="button" aria-label="播放或暂停"><span class="mini-ring"></span><span id="miniGlyph">▶</span></button>
+</main>
+
+<!-- 终幕：夜海破晓 -->
+<div class="finale" id="finale">
+  <div class="fin-night" aria-hidden="true"></div>
+  <div class="fin-inner">
+    <div class="fin-line" id="finLine" aria-hidden="true"></div>
+    <p class="fin-her" id="finHer" aria-label="得失从缘，心无增减"></p>
+    <p class="fin-cy" id="finCy">— C.Y.</p>
+    <button class="fin-replay" id="replayBtn" type="button">再听一遍</button>
+    <p class="footnote">制作说明：作词——GPT（军师）；作曲与演唱——YuE 2（YuE2-3B）开源音乐模型，经 audio.cpp 在本地生成（AI 女声演唱）；制作统筹——Amani Chen。本曲由 C.Y. 与他的团队制作，2026 年 11 月。</p>
+    <a class="save" href="song.mp3" download>保存音频</a>
+    <p class="made-date">为端端制作于 二〇二六年十一月八日</p>
+    <p class="made-date" style="margin-top:8px">v2</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var audio = document.getElementById('song');
+  var mtv = document.getElementById('mtv');
+  var btn = document.getElementById('listenBtn');
+  var word = document.getElementById('listenWord');
+  var ringWrap = document.getElementById('ringWrap');
+  /* JS 在场时接管播放，隐藏原生控件；JS 失效时原生控件就是后备 */
+  audio.removeAttribute('controls');
+  function safePlay(el){ var p = el.play(); if (p && p.catch) { p.catch(function(){}); } }
+  /* 微信/iOS 预解锁：桥接就绪或第一次触摸时先把音频载入，避免第一次点按落空 */
+  document.addEventListener('WeixinJSBridgeReady', function(){ audio.load(); }, false);
+  document.addEventListener('touchstart', function unlock(){
+    audio.load();
+    document.removeEventListener('touchstart', unlock);
+  }, { passive: true });
+
+  /* ---- 歌词同步：rAF 采样，提前 150ms 点亮当前行，唱过的行沉到半透明 ---- */
+  var lines = Array.prototype.slice.call(document.querySelectorAll('#lyrics p[data-t]'));
+  var rafId = null, lastActive = null;
+  function syncStep(){
+    var t = audio.currentTime + 0.15, active = null, i, p;
+    for (i = 0; i < lines.length; i++) {
+      p = lines[i];
+      var start = parseFloat(p.getAttribute('data-t'));
+      if (start <= t) { active = p; p.classList.add('sung'); }
+    }
+    if (active !== lastActive) {
+      lines.forEach(function(el){ el.classList.toggle('now', el === active); });
+      if (active) {
+        var r = active.getBoundingClientRect();
+        if (r.top > window.innerHeight * 0.72 || r.bottom < window.innerHeight * 0.18) {
+          active.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+      lastActive = active;
+    }
+    if (!audio.paused && !audio.ended) { rafId = requestAnimationFrame(syncStep); }
+  }
+  function startSync(){ if (rafId === null) { rafId = requestAnimationFrame(syncStep); } }
+  function stopSync(){ if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
+
+  var playHint = document.getElementById('playHint');
+  var hintShown = false, awaitingPlay = false, hintTimer = null;
+  function armHint(){
+    awaitingPlay = true;
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function(){
+      if (awaitingPlay && !hintShown) {
+        hintShown = true;
+        playHint.classList.add('show');
+        setTimeout(function(){ playHint.classList.remove('show'); }, 3400);
+      }
+    }, 1500);
+  }
+  btn.addEventListener('click', function(){
+    if (audio.paused) { ringWrap.classList.add('buffering'); armHint(); safePlay(audio); }
+    else { audio.pause(); }
+  });
+  var miniToggle = document.getElementById('miniToggle');
+  var miniGlyph = document.getElementById('miniGlyph');
+  var started = false;
+  miniToggle.addEventListener('click', function(){
+    if (audio.paused) { ringWrap.classList.add('buffering'); armHint(); safePlay(audio); }
+    else { audio.pause(); }
+  });
+  audio.addEventListener('play', function(){
+    document.body.classList.add('playing');
+    word.textContent = '暂停';
+    btn.setAttribute('aria-label', '暂停');
+    if (mtv && !mtv.paused) { mtv.pause(); }
+    startSync();
+  });
+  audio.addEventListener('pause', function(){
+    document.body.classList.remove('playing');
+    word.textContent = '听一听';
+    btn.setAttribute('aria-label', '听一听');
+    ringWrap.classList.remove('buffering');
+    awaitingPlay = false; clearTimeout(hintTimer);
+    if (started && !audio.ended) { miniGlyph.textContent = '▶'; }
+    stopSync();
+  });
+  audio.addEventListener('waiting', function(){ ringWrap.classList.add('buffering'); });
+  audio.addEventListener('playing', function(){
+    ringWrap.classList.remove('buffering');
+    awaitingPlay = false; clearTimeout(hintTimer); playHint.classList.remove('show');
+    started = true;
+    miniToggle.classList.add('show');
+    miniGlyph.textContent = '❚❚';
+  });
+  if (mtv) {
+    mtv.addEventListener('play', function(){ if (!audio.paused) { audio.pause(); } });
+    mtv.addEventListener('canplay', function(){
+      mtv.hidden = false;
+      var fr = document.getElementById('mtvFrame');
+      if (fr) { fr.style.display = 'none'; }
+    });
+  }
+
+  /* ---- 终幕时序：静默 2.5s → 金线 1.2s → 停 0.3s → 破晓 2.0s → 逐字 3s → 静止 1.5s → 落款 1.4s ---- */
+  var finale = document.getElementById('finale');
+  var finLine = document.getElementById('finLine');
+  var finHer = document.getElementById('finHer');
+  var finCy = document.getElementById('finCy');
+  var finTimers = [];
+  '得失从缘，心无增减'.split('').forEach(function(c, i){
+    var s = document.createElement('span');
+    s.className = 'ch'; s.textContent = c;
+    s.style.transitionDelay = (i * 0.28) + 's';
+    finHer.appendChild(s);
+  });
+  var finChars = finHer.querySelectorAll('.ch');
+  function finLater(fn, ms){ finTimers.push(setTimeout(fn, ms)); }
+  var finDone = false, finRunning = false;
+  function finishFinale(){
+    finTimers.forEach(clearTimeout); finTimers = [];
+    finLine.classList.add('grow');
+    finale.classList.add('dawned');
+    finChars.forEach(function(s){ s.classList.add('on'); });
+    finCy.classList.add('float');
+    finDone = true; finRunning = false;
+  }
+  finale.addEventListener('click', function(){
+    if (finRunning && !finDone) { finishFinale(); }
+  });
+  function runFinale(){
+    finDone = false; finRunning = true;
+    finTimers.forEach(clearTimeout); finTimers = [];
+    finale.classList.remove('dawned');
+    finLine.classList.remove('grow');
+    finCy.classList.remove('float');
+    finChars.forEach(function(s){ s.classList.remove('on'); });
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { finishFinale(); return; }
+    finale.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    finLater(function(){ finLine.classList.add('grow'); }, 2500);
+    finLater(function(){ finale.classList.add('dawned'); }, 2500 + 1200 + 300);
+    finChars.forEach(function(s){
+      finLater(function(){ s.classList.add('on'); }, 6000);
+    });
+    finLater(function(){ finCy.classList.add('float'); finDone = true; finRunning = false; }, 6000 + 3000 + 4500);
+  }
+  audio.addEventListener('ended', function(){
+    document.body.classList.remove('playing');
+    miniGlyph.textContent = '▶';
+    stopSync();
+    lines.forEach(function(p){ p.classList.remove('now'); });
+    lastActive = null;
+    runFinale();
+  });
+  document.getElementById('replayBtn').addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    audio.currentTime = 0;
+    safePlay(audio);
+  });
+
+  /* ---- 段落入场 ---- */
+  var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 }) : null;
+  document.querySelectorAll('.reveal').forEach(function(el){
+    if (io) { io.observe(el); } else { el.classList.add('in'); }
+  });
+})();
+</script>
+</body>
+</html>
