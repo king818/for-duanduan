@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="《愿你心里有光》">
 <title>《愿你心里有光》</title>
@@ -19,11 +20,17 @@
     font-weight:700; font-style:normal; font-display:swap;
   }
   :root{
+    color-scheme: light only;
     --bg:#FAF6F0; --ink:#22303C; --soft:#5D6B76; --faint:#87919A;
     --gold:#C9A227; --gold-deep:#9A7A3F; --hair:#E3DACA;
   }
+  @media (prefers-color-scheme: dark){
+    body{ background:#FAF6F0 !important; color:#22303C !important; }
+    .finale{ background:#FAF6F0 !important; }
+  }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
+  html, body{overscroll-behavior:none}
   body{
     margin:0; color:var(--ink); background:var(--bg);
     font-family:"HanSerifSub","Songti SC","STSong","Noto Serif SC","Noto Serif CJK SC","Source Han Serif SC",serif;
@@ -106,6 +113,28 @@
   .playing .ring .bars{display:flex}
   .listen-word{font-size:15px; letter-spacing:.3em; text-indent:.3em; transition:opacity .6s ease;}
   .playing .listen-word{opacity:.3}
+  .whisper{
+    margin:30px 0 0; font-size:11px; color:var(--faint); letter-spacing:.14em; text-indent:.14em;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .play-hint{
+    margin:14px 0 0; font-size:11px; color:var(--faint); letter-spacing:.1em; text-indent:.1em;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    opacity:0; transition:opacity .6s ease; pointer-events:none;
+  }
+  .play-hint.show{opacity:1}
+  .mini-toggle{
+    position:fixed; right:calc(14px + env(safe-area-inset-right)); bottom:calc(14px + env(safe-area-inset-bottom));
+    z-index:40; width:40px; height:40px; border:none; background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .8s ease;
+    font-family:var(--serif); font-size:13px; color:var(--gold-deep);
+  }
+  .mini-toggle.show{opacity:.3; pointer-events:auto}
+  .mini-toggle .mini-ring{
+    position:absolute; inset:6px; border:1px solid var(--gold); border-radius:50%;
+  }
+  .playing .mini-toggle .mini-ring{animation:breathe 4s ease-in-out infinite}
 
   /* ---------- sections (one continuous scene, no chrome) ---------- */
   section{padding:64px 0 0}
@@ -134,7 +163,7 @@
   /* poem */
   .lyrics{max-width:21em;}
   .lyrics p{
-    margin:0 0 10px; font-size:15.5px; line-height:2.2; letter-spacing:.08em;
+    margin:0 0 10px; font-size:17px; line-height:2.2; letter-spacing:.08em;
     color:rgba(34,48,60,.32);
     transition:color .6s cubic-bezier(.25,1,.5,1), text-shadow .6s cubic-bezier(.25,1,.5,1);
   }
@@ -170,10 +199,12 @@
   .finale.dawned .fin-night{opacity:0}
   .fin-inner{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; max-width:620px;}
   .fin-line{
-    width:0; opacity:0; height:1px; background:var(--gold); margin-bottom:58px;
-    transition:width 1.2s ease-out, opacity 1.2s ease-out;
+    width:3px; height:3px; border-radius:50%; background:var(--gold); margin-bottom:58px;
+    animation:anchor 3s ease-in-out infinite;
+    transition:width 1.2s ease-out, height 1.2s ease-out, border-radius 1.2s ease-out;
   }
-  .fin-line.grow{width:48px; opacity:.7}
+  @keyframes anchor{0%,100%{opacity:.25}50%{opacity:.6}}
+  .fin-line.grow{width:48px; height:1px; border-radius:0; opacity:.7; animation:none}
   .fin-her{
     font-size:19px; line-height:1.8; font-weight:400; letter-spacing:.28em; text-indent:.28em;
     color:var(--ink); margin:0; min-height:1.8em;
@@ -184,11 +215,11 @@
   }
   .fin-her .ch.on{opacity:1; filter:blur(0); transform:none}
   .fin-cy{
-    margin:32px 0 0; font-size:13.5px; letter-spacing:.15em; text-indent:.15em;
-    color:rgba(34,48,60,.65); opacity:0; transform:translateY(8px);
-    transition:opacity 1.4s ease, transform 1.4s ease;
+    margin:70px 0 0; font-size:10.5px; letter-spacing:.15em; text-indent:.15em;
+    color:rgba(201,162,39,.32); opacity:0;
+    transition:opacity 1.8s ease;
   }
-  .fin-cy.float{opacity:.85; transform:none}
+  .fin-cy.float{opacity:1}
   .fin-replay{
     margin-top:64px; background:none; border:none; cursor:pointer;
     font-family:inherit; font-size:14px; color:var(--faint); letter-spacing:.2em; text-indent:.2em; padding:10px;
@@ -226,6 +257,8 @@
       <span class="ring-wrap" id="ringWrap"><span class="ring"><span class="tri"></span><span class="bars"><i></i><i></i><i></i><i></i></span></span></span>
       <span class="listen-word" id="listenWord">听一听</span>
     </button>
+    <p class="whisper">戴上耳机，效果更佳</p>
+    <p class="play-hint" id="playHint">若未出声，请再点一次</p>
   </div>
 
   <audio id="song" controls preload="metadata" src="song.mp3"></audio>
@@ -299,6 +332,7 @@
   <section class="reveal" id="close-sec">
     <p class="her-line">得失从缘，心无增减</p>
   </section>
+<button class="mini-toggle" id="miniToggle" type="button" aria-label="播放或暂停"><span class="mini-ring"></span><span id="miniGlyph">▶</span></button>
 </main>
 
 <!-- 终幕：夜海破晓 -->
@@ -307,11 +341,11 @@
   <div class="fin-inner">
     <div class="fin-line" id="finLine" aria-hidden="true"></div>
     <p class="fin-her" id="finHer" aria-label="得失从缘，心无增减"></p>
-    <p class="fin-cy" id="finCy">愿你心里有光。—— C.Y.</p>
+    <p class="fin-cy" id="finCy">— C.Y.</p>
     <button class="fin-replay" id="replayBtn" type="button">再听一遍</button>
     <p class="footnote">制作说明：作词——GPT（军师）；作曲与演唱——YuE 2（YuE2-3B）开源音乐模型，经 audio.cpp 在本地生成（AI 女声演唱）；制作统筹——Amani Chen。本曲由 C.Y. 与他的团队制作，2026 年 11 月。</p>
     <a class="save" href="song.mp3" download>保存音频</a>
-    <p class="made-date">为端端制作于 2026年11月8日</p>
+    <p class="made-date">为端端制作于 二〇二六年十一月八日</p>
   </div>
 </div>
 
@@ -325,6 +359,12 @@
   /* JS 在场时接管播放，隐藏原生控件；JS 失效时原生控件就是后备 */
   audio.removeAttribute('controls');
   function safePlay(el){ var p = el.play(); if (p && p.catch) { p.catch(function(){}); } }
+  /* 微信/iOS 预解锁：桥接就绪或第一次触摸时先把音频载入，避免第一次点按落空 */
+  document.addEventListener('WeixinJSBridgeReady', function(){ audio.load(); }, false);
+  document.addEventListener('touchstart', function unlock(){
+    audio.load();
+    document.removeEventListener('touchstart', unlock);
+  }, { passive: true });
 
   /* ---- 歌词同步：rAF 采样，提前 150ms 点亮当前行，唱过的行沉到半透明 ---- */
   var lines = Array.prototype.slice.call(document.querySelectorAll('#lyrics p[data-t]'));
@@ -351,8 +391,29 @@
   function startSync(){ if (rafId === null) { rafId = requestAnimationFrame(syncStep); } }
   function stopSync(){ if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
 
+  var playHint = document.getElementById('playHint');
+  var hintShown = false, awaitingPlay = false, hintTimer = null;
+  function armHint(){
+    awaitingPlay = true;
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function(){
+      if (awaitingPlay && !hintShown) {
+        hintShown = true;
+        playHint.classList.add('show');
+        setTimeout(function(){ playHint.classList.remove('show'); }, 3400);
+      }
+    }, 1500);
+  }
   btn.addEventListener('click', function(){
-    if (audio.paused) { safePlay(audio); } else { audio.pause(); }
+    if (audio.paused) { ringWrap.classList.add('buffering'); armHint(); safePlay(audio); }
+    else { audio.pause(); }
+  });
+  var miniToggle = document.getElementById('miniToggle');
+  var miniGlyph = document.getElementById('miniGlyph');
+  var started = false;
+  miniToggle.addEventListener('click', function(){
+    if (audio.paused) { ringWrap.classList.add('buffering'); armHint(); safePlay(audio); }
+    else { audio.pause(); }
   });
   audio.addEventListener('play', function(){
     document.body.classList.add('playing');
@@ -365,10 +426,19 @@
     document.body.classList.remove('playing');
     word.textContent = '听一听';
     btn.setAttribute('aria-label', '听一听');
+    ringWrap.classList.remove('buffering');
+    awaitingPlay = false; clearTimeout(hintTimer);
+    if (started && !audio.ended) { miniGlyph.textContent = '▶'; }
     stopSync();
   });
   audio.addEventListener('waiting', function(){ ringWrap.classList.add('buffering'); });
-  audio.addEventListener('playing', function(){ ringWrap.classList.remove('buffering'); });
+  audio.addEventListener('playing', function(){
+    ringWrap.classList.remove('buffering');
+    awaitingPlay = false; clearTimeout(hintTimer); playHint.classList.remove('show');
+    started = true;
+    miniToggle.classList.add('show');
+    miniGlyph.textContent = '❚❚';
+  });
   if (mtv) {
     mtv.addEventListener('play', function(){ if (!audio.paused) { audio.pause(); } });
     mtv.addEventListener('canplay', function(){
@@ -392,30 +462,38 @@
   });
   var finChars = finHer.querySelectorAll('.ch');
   function finLater(fn, ms){ finTimers.push(setTimeout(fn, ms)); }
+  var finDone = false, finRunning = false;
+  function finishFinale(){
+    finTimers.forEach(clearTimeout); finTimers = [];
+    finLine.classList.add('grow');
+    finale.classList.add('dawned');
+    finChars.forEach(function(s){ s.classList.add('on'); });
+    finCy.classList.add('float');
+    finDone = true; finRunning = false;
+  }
+  finale.addEventListener('click', function(){
+    if (finRunning && !finDone) { finishFinale(); }
+  });
   function runFinale(){
+    finDone = false; finRunning = true;
     finTimers.forEach(clearTimeout); finTimers = [];
     finale.classList.remove('dawned');
     finLine.classList.remove('grow');
     finCy.classList.remove('float');
     finChars.forEach(function(s){ s.classList.remove('on'); });
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      finLine.classList.add('grow');
-      finale.classList.add('dawned');
-      finChars.forEach(function(s){ s.classList.add('on'); });
-      finCy.classList.add('float');
-      return;
-    }
+    if (reduce) { finishFinale(); return; }
     finale.scrollIntoView({ behavior: 'smooth', block: 'start' });
     finLater(function(){ finLine.classList.add('grow'); }, 2500);
     finLater(function(){ finale.classList.add('dawned'); }, 2500 + 1200 + 300);
     finChars.forEach(function(s){
       finLater(function(){ s.classList.add('on'); }, 6000);
     });
-    finLater(function(){ finCy.classList.add('float'); }, 6000 + 3000 + 1500);
+    finLater(function(){ finCy.classList.add('float'); finDone = true; finRunning = false; }, 6000 + 3000 + 4500);
   }
   audio.addEventListener('ended', function(){
     document.body.classList.remove('playing');
+    miniGlyph.textContent = '▶';
     stopSync();
     lines.forEach(function(p){ p.classList.remove('now'); });
     lastActive = null;
