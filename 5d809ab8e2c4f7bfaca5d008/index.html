@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="《愿你心里有光》">
+<title>《愿你心里有光》</title>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  :root{
+    --bg:#FAF6F0; --ink:#22303C; --soft:#5D6B76; --faint:#87919A;
+    --gold:#C9A227; --gold-soft:#A8861B; --hair:#E3DACA; --track:#E9E1D2;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--ink);
+    background:linear-gradient(180deg,#F6ECD7 0,#FAF6F0 300px) no-repeat, var(--bg);
+    font-family:"Noto Serif SC","Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;
+    line-height:1.9; -webkit-font-smoothing:antialiased;
+  }
+  main{max-width:620px; margin:0 auto; padding:0 24px 72px;}
+
+  /* ---------- first screen ---------- */
+  .hero{
+    min-height:100vh; min-height:100svh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+    padding:48px 0 40px;
+  }
+  h1{font-size:clamp(28px,8.6vw,36px); font-weight:600; letter-spacing:.12em; margin:0 0 14px; text-indent:.12em; white-space:nowrap;}
+  .hero-sub{color:var(--soft); font-size:16px; margin:0 0 64px;}
+  .listen-btn{
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+    background:none; border:none; cursor:pointer; padding:12px;
+    font-family:inherit; color:var(--ink); -webkit-tap-highlight-color:transparent;
+  }
+  .ring{
+    width:76px; height:76px; border-radius:50%;
+    border:1px solid var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    animation:breathe 3.6s ease-in-out infinite;
+    transition:background .8s ease;
+  }
+  .ring .dot{
+    width:11px; height:11px; border-radius:50%; background:var(--gold);
+    opacity:.75; transition:all .8s ease;
+  }
+  .ring .tri{
+    width:0; height:0; margin-left:4px;
+    border-left:15px solid var(--gold-soft);
+    border-top:9px solid transparent; border-bottom:9px solid transparent;
+  }
+  .ring .bars{display:none; align-items:flex-end; gap:3.5px; height:18px;}
+  .ring .bars i{width:3px; background:var(--gold-soft); border-radius:2px; animation:eq 1.1s ease-in-out infinite;}
+  .ring .bars i:nth-child(1){height:9px}
+  .ring .bars i:nth-child(2){height:16px; animation-delay:.18s}
+  .ring .bars i:nth-child(3){height:11px; animation-delay:.36s}
+  .ring .bars i:nth-child(4){height:15px; animation-delay:.54s}
+  .playing .ring{animation:none; background:radial-gradient(circle,rgba(201,162,39,.17) 0,rgba(201,162,39,0) 70%);}
+  .playing .ring .tri{display:none}
+  .playing .ring .bars{display:flex}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+  @keyframes eq{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1)}}
+  .listen-word{font-size:17px; letter-spacing:.34em; text-indent:.34em;}
+  .progress{width:min(300px,74vw); margin-top:34px; visibility:hidden}
+  .progress.on{visibility:visible}
+  .track{height:2px; background:var(--track); border-radius:2px; overflow:hidden}
+  .fill{height:100%; width:0; background:var(--gold); transition:width .3s linear}
+  .time{display:flex; justify-content:space-between; font-size:12px; color:var(--faint);
+        margin-top:8px; font-family:-apple-system,"PingFang SC",sans-serif; letter-spacing:.05em}
+  .hero-down{margin-top:56px; color:var(--faint); font-size:19px; animation:drift 2.8s ease-in-out infinite}
+  @keyframes drift{0%,100%{transform:translateY(0); opacity:.5}50%{transform:translateY(5px); opacity:.9}}
+
+  /* ---------- sections ---------- */
+  section{padding:64px 0 0}
+  .reveal{opacity:1}
+  .js .reveal{opacity:0; transform:translateY(14px); transition:opacity 1.1s ease, transform 1.1s ease}
+  .js .reveal.in{opacity:1; transform:none}
+  h2{font-size:19px; font-weight:600; letter-spacing:.14em; margin:0 0 22px;}
+  .dedication{font-size:17px; margin:0 0 26px;}
+  .intro{font-size:16px; color:var(--soft); margin:0;}
+  .invite{color:var(--soft); font-size:15.5px; margin:0 0 18px;}
+  video{width:100%; display:block; background:#10161C; aspect-ratio:16/9; border:none;}
+  .lyrics p{margin:0 0 5px; font-size:16.5px; transition:color 1.2s ease;}
+  .lyrics p.sung{color:var(--gold-soft)}
+  .lyrics .stanza{margin-bottom:28px}
+  .lyrics .stanza-name{
+    color:var(--gold-soft); font-size:13.5px; letter-spacing:.22em; margin-bottom:10px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .blessing{font-size:16.5px; margin:0}
+  .her-line{
+    text-align:center; font-size:21px; letter-spacing:.42em; text-indent:.42em;
+    color:var(--gold-soft); margin:26px 0 10px; font-weight:600;
+  }
+  .replay{
+    display:block; margin:30px auto 0; background:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:14.5px; color:var(--faint); letter-spacing:.2em; text-indent:.2em;
+    padding:10px;
+  }
+  .replay:active{color:var(--gold-soft)}
+  .footnote{
+    margin-top:56px; padding-top:20px; border-top:1px solid var(--hair);
+    font-size:12.5px; line-height:1.85; color:#6E6250;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .save{
+    display:block; text-align:center; margin-top:28px;
+    font-size:12.5px; color:var(--faint); text-decoration:none;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .ring,.hero-down,.ring .bars i{animation:none}
+    .js .reveal{opacity:1; transform:none; transition:none}
+  }
+</style>
+</head>
+<body>
+<main>
+  <!-- 第一屏：只有歌名、一句小字、一个聆听入口 -->
+  <div class="hero">
+    <h1>《愿你心里有光》</h1>
+    <p class="hero-sub">给端端的一首歌</p>
+    <button class="listen-btn" id="listenBtn" type="button" aria-label="听一听">
+      <span class="ring"><span class="tri"></span><span class="bars"><i></i><i></i><i></i><i></i></span></span>
+      <span class="listen-word">听一听</span>
+    </button>
+    <div class="progress" id="progress">
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <div class="time"><span id="cur">0:00</span><span id="dur">2:38</span></div>
+    </div>
+    <div class="hero-down" aria-hidden="true">⌄</div>
+  </div>
+
+  <audio id="song" preload="metadata" src="song.mp3"></audio>
+
+  <!-- 献词 -->
+  <section class="reveal" id="dedication">
+    <p class="dedication">端端，这首歌是C.Y.和团队特意为你的30岁生日做的。没有太多排场，只想把一份安静、认真、属于你的祝福送给你。</p>
+    <p class="intro">这首歌里，放进了我们最想送给你的几件事：愿你有光，也有安宁；有健康，也有自在；不必追着谁的步调，只按自己的节奏，把想做的事一点一点做成。得失来去，都不必惊扰内心。愿你一路走自己真正想走的路。</p>
+  </section>
+
+  <!-- 画面（MTV） -->
+  <section class="reveal" id="mtv-sec">
+    <p class="invite">也可以看看这首歌的画面</p>
+    <video id="mtv" controls preload="none" playsinline webkit-playsinline src="mtv.mp4">
+      您的浏览器不支持视频播放。
+    </video>
+  </section>
+
+  <!-- 歌词 -->
+  <section class="reveal" id="lyrics-sec">
+    <h2>歌词</h2>
+    <div class="lyrics" id="lyrics">
+      <div class="stanza">
+        <p class="stanza-name">主歌一</p>
+        <p data-t="13.9">海风轻轻吹过窗台，</p>
+        <p data-t="20.7">晨光落在你肩上。</p>
+        <p data-t="27.8">这一路走了很远，</p>
+        <p data-t="34.2">心里还装着微光。</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">副歌</p>
+        <p data-t="39.3">愿你心里有光，脚下有路，</p>
+        <p data-t="46.6">平安健康，日子不慌不忙。</p>
+        <p data-t="53.4">想做的事，一点点做成，</p>
+        <p data-t="60.4">得失从缘，心无增减，自在生长。</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">主歌二</p>
+        <p data-t="81.6">有人说世界很大，</p>
+        <p data-t="88.2">有人说时间很忙。</p>
+        <p data-t="95.2">你只管走自己的路，</p>
+        <p data-t="102.6">把喜欢活成日常。</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">副歌（重复）</p>
+        <p data-t="107.2">愿你心里有光，脚下有路，</p>
+        <p data-t="114.5">平安健康，日子不慌不忙。</p>
+        <p data-t="121.3">想做的事，一点点做成，</p>
+        <p data-t="128.2">得失从缘，心无增减，自在生长。</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">结尾</p>
+        <p data-t="137.5">愿你心里有光，</p>
+        <p data-t="144.5">一直亮着，不慌不忙。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 祝福 -->
+  <section class="reveal" id="blessing-sec">
+    <h2>祝福</h2>
+    <p class="blessing">端端，30岁生日快乐。❤️ 愿你新的一岁平安、健康，心里越来越自在，想做的事情一点一点做成。你写过“得失从缘，心无增减”，我一直很喜欢这句话。愿往后的日子，无论顺境逆境，你都能保有自己的光、自己的底气，也有很多真正让你开心的人和事。愿上帝看顾你。生日快乐，老猪。🎂</p>
+  </section>
+
+  <!-- 收尾：她自己的话 -->
+  <section class="reveal" id="close-sec">
+    <p class="her-line">得失从缘，心无增减</p>
+    <button class="replay" id="replayBtn" type="button">再听一遍</button>
+    <p class="footnote">制作说明：作词——GPT（军师）；作曲与演唱——YuE 2（YuE2-3B）开源音乐模型，经 audio.cpp 在本地生成（AI 女声演唱）；制作统筹——Amani Chen。本曲由 C.Y. 与他的团队制作，2026 年 11 月。</p>
+    <a class="save" href="song.mp3" download>保存音频</a>
+  </section>
+</main>
+<script>
+(function(){
+  var audio = document.getElementById('song');
+  var mtv = document.getElementById('mtv');
+  function safePlay(el){ var p = el.play(); if (p && p.catch) { p.catch(function(){}); } }
+  var btn = document.getElementById('listenBtn');
+  var progress = document.getElementById('progress');
+  var fill = document.getElementById('fill');
+  var cur = document.getElementById('cur');
+  var dur = document.getElementById('dur');
+  var lines = Array.prototype.slice.call(document.querySelectorAll('#lyrics p[data-t]'));
+  function fmt(s){ s = Math.max(0, Math.floor(s||0)); return Math.floor(s/60) + ':' + ('0' + (s%60)).slice(-2); }
+  audio.addEventListener('loadedmetadata', function(){ dur.textContent = fmt(audio.duration); });
+  btn.addEventListener('click', function(){
+    if (audio.paused) { safePlay(audio); } else { audio.pause(); }
+  });
+  audio.addEventListener('play', function(){
+    document.body.classList.add('playing'); progress.classList.add('on');
+    btn.setAttribute('aria-label', '暂停');
+    if (mtv && !mtv.paused) { mtv.pause(); }
+  });
+  audio.addEventListener('pause', function(){ btn.setAttribute('aria-label', '听一听'); });
+  if (mtv) { mtv.addEventListener('play', function(){ if (!audio.paused) { audio.pause(); } }); }
+  audio.addEventListener('pause', function(){ document.body.classList.remove('playing'); });
+  audio.addEventListener('ended', function(){
+    document.body.classList.remove('playing');
+    lines.forEach(function(p){ p.classList.remove('sung'); });
+  });
+  audio.addEventListener('timeupdate', function(){
+    if (audio.duration) { fill.style.width = (audio.currentTime / audio.duration * 100) + '%'; }
+    cur.textContent = fmt(audio.currentTime);
+    var t = audio.currentTime, active = null;
+    for (var i = 0; i < lines.length; i++) {
+      if (parseFloat(lines[i].getAttribute('data-t')) <= t) { active = lines[i]; }
+    }
+    lines.forEach(function(p){ p.classList.toggle('sung', p === active); });
+  });
+  document.getElementById('replayBtn').addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    audio.currentTime = 0;
+    safePlay(audio);
+  });
+  var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 }) : null;
+  document.querySelectorAll('.reveal').forEach(function(el){
+    if (io) { io.observe(el); } else { el.classList.add('in'); }
+  });
+})();
+</script>
+</body>
+</html>
